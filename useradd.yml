@@ -1,0 +1,22 @@
+---
+- hosts: web
+  vars:
+    admin_username: sysop
+    admin_password: $6$rounds=656000$MyxJqZ8P.WOooYr.$5kpkiNTw7jLIhdWmt9UMYMKFQ05GKKGIYo5.ssPIoJ.m52Gj5F5h46gZbYWrXA/7lH4gWDkHZB4B5exQbMvfN.
+    admin_authorized_keys: "{{ lookup('file', '/home/sysop/.ssh/id_rsa.pub') }}"
+  tasks:
+  - name: add user
+    user:
+      name: "{{ admin_username }}"
+      groups: wheel
+      append: yes
+      password: "{{ admin_password }}"
+      generate_ssh_key: yes
+      ssh_key_comment: ansible-generated on {{ admin_username }}@{{ inventory_hostname_short }}
+      skeleton: /etc/skel/
+      state: present
+
+  - name: copy authorized_keys
+    authorized_key:
+      user: "{{ admin_username }}"
+      key: "{{ admin_authorized_keys }}"
