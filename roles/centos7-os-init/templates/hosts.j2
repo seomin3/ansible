@@ -1,0 +1,6 @@
+172.0.0.1	localhost
+{% for host in groups['all'] %}
+{% for ip in hostvars[host]['ansible_all_ipv4_addresses'] %}
+{{ ip }}	{{ hostvars[host]['ansible_hostname'] }}
+{% endfor %}
+{% endfor %}

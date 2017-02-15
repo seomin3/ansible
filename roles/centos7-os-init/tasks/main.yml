@@ -1,0 +1,13 @@
+---
+- name: install the letest version of package
+  yum: name={{ common_packages }} state=present
+  tags:
+    - init
+
+- name: deploy hosts file
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 644

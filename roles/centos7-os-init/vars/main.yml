@@ -1,0 +1,26 @@
+---
+common_packages:
+  - lrzsz
+  - net-tools
+  - mlocate
+  - perl
+  - htop
+  - dstat
+  - sysstat
+  - git
+  - python-pip
+  - ntp
+  - python-devel
+  - vim
+  - pciutils
+  - hdparm
+  - lsof
+  - iotop
+  - curl
+  - wget
+  - psmisc
+  - tcpdump
+  - lvm2
+  - ntfs-3g
+  - open-vm-tools
+
