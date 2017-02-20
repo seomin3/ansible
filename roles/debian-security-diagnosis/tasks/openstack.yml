@@ -7,6 +7,7 @@
     group: "{{ item }}"
     recurse: yes
   with_items: "{{ openstack_modules }}"
+  ignore_errors: yes
 
 - name: set permission of openstack config file
   file:
