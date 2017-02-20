@@ -1,0 +1,19 @@
+---
+- name: set permission of openstack logfile
+  file:
+    path: /var/log/{{ item }}
+    mode: u=rwX,g=rwX,o-rwx
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    recurse: yes
+  with_items: "{{ openstack_modules }}"
+
+- name: set permission of openstack config file
+  file:
+    path: /etc/{{ item }}
+    mode: u=rwX,g=rwX,o-rwx
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    recurse: yes
+  with_items: "{{ openstack_modules }}"
+  ignore_errors: yes

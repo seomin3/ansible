@@ -1,0 +1,8 @@
+---
+openstack_modules:
+  - keystone
+  - horizon
+  - nova
+  - cinder
+  - glance
+  - neutron
