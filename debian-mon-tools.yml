@@ -1,0 +1,32 @@
+---
+- name: install htop and dstat
+  hosts: "{{ host_group | default('hos3') }}"
+  vars:
+    debian_repository_file: |
+      deb http://ftp.kr.debian.org/debian/ jessie main
+      deb-src http://ftp.kr.debian.org/debian/ jessie main
+
+  tasks:
+    - name: unexpected os distribution
+      debug:
+        msg: os distribution {{ ansible_os_family }} is not support
+      when: not ansible_os_family == "Debian"
+
+    - name: set a apt source
+      copy:
+        dest: /etc/apt/sources.list.d/debian.list
+        content: "{{ debian_repository_file }}"
+
+    - name: apt
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - htop
+        - dstat
+
+    - name: remove a apt source
+      file:
+        path: /etc/apt/sources.list.d/debian.list
+        state: absent

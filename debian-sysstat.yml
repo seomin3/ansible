@@ -1,6 +1,6 @@
 ---
 - name: install sysstat
-  hosts: hos3
+  hosts: "{{ host_group | default('hos3') }}"
   vars:
     sysstat_default_file: |
       #
