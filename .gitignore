@@ -1,3 +1,5 @@
+.ftpconfig
+.idea/
 hosts
 *.retry
 docs/

@@ -1,0 +1,69 @@
+---
+- name: monasca process monitoring for neutron aci module
+  hosts: NEU-OVS
+  become: yes
+  vars:
+    cont_process:
+      - sshd
+      - neutron-cisco-apic-host-agent
+      - neutron-cisco-apic-service-agent
+    comp_process:
+      - sshd
+      - agent-ovs
+      - neutron-opflex-agent
+      - neutron-cisco-apic-host-agent
+    target_file: '/etc/monasca/agent/conf.d/process.yaml'
+    ran_flag_file: '/etc/monasca/agent/conf.d/ran-aci-process'
+    reset: false
+
+  tasks:
+    - name: delete ran file
+      when: reset
+      file: path="{{ ran_flag_file }}" state=absent
+
+    - name: check if playbook has ran
+      stat: path={{ ran_flag_file }}
+      register: ran_status
+
+    - name: update process.yaml in controller
+      when: "'NEU-SVR' in group_names and ran_status.stat.exists == False"
+      lineinfile:
+        dest: "{{ target_file }}"
+        line: |
+          # workaround - {{ item }} in controller
+          - name: {{ item }}
+            detailed: true
+            exact_math: false
+            search_string:
+            - {{ item }}
+            dimensions:
+              component: {{ item }}
+              service: networking
+            built_by: Neutron
+        backup: yes
+      with_items: "{{ cont_process }}"
+
+    - name: update process.yaml in compute
+      when: "'NOV-CMP' in group_names and ran_status.stat.exists == False"
+      lineinfile:
+        dest: "{{ target_file }}"
+        line: |
+          # workaround - {{ item }} in compute
+          - name: {{ item }}
+            detailed: true
+            exact_math: false
+            search_string:
+            - {{ item }}
+            dimensions:
+              component: {{ item }}
+              service: networking
+            built_by: Neutron
+      with_items: "{{ comp_process }}"
+
+    - name: restart monasca-agent
+      service:
+        name: monasca-agent
+        state: restarted
+
+    - name: create ran file
+      file: path="{{ ran_flag_file }}" state=touch
