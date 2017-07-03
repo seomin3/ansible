@@ -1,27 +1,15 @@
-[web]
-web01
-web02
+[cont]
+cont1 ansible_ssh_host=192.168.100.11
 
-[hos3]
-hlm ansible_host=192.168.30.132
-cont1 ansible_host=192.168.30.151
-cont2 ansible_host=192.168.30.152
-cont3 ansible_host=192.168.30.153
-com1 ansible_host=192.168.30.154
-com2 ansible_host=192.168.30.155
-cp1 ansible_host=192.168.30.156
-cp2 ansible_host=192.168.30.157
-cp3 ansible_host=192.168.30.158
+[comp]
+com1 ansible_ssh_host=192.168.100.21
+com2 ansible_ssh_host=192.168.100.22
+
+[hos3:children]
+cont
+comp
+
 [hos3:vars]
 ansible_user=stack
-ansible_ssh_private_key_file=/d/Google/keypair/esxi-hos3/hlm
-ansible_become=true
-
-[hos3-cont]
-cont1 ansible_host=192.168.30.151
-cont2 ansible_host=192.168.30.152
-cont3 ansible_host=192.168.30.153
-[hos3-cont:vars]
-ansible_user=stack
-ansible_ssh_private_key_file=/d/Google/keypair/esxi-hos3/hlm
+#ansible_ssh_private_key_file=/d/Google/keypair/esxi-hos3/hlm
 ansible_become=true

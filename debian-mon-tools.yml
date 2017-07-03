@@ -2,6 +2,10 @@
 - name: install htop and dstat
   hosts: "{{ host_group | default('hos3') }}"
   vars:
+    debian_mon:
+      - htop
+      - dstat
+      - libguestfs-tools
     debian_repository_file: |
       deb http://ftp.kr.debian.org/debian/ jessie main
       deb-src http://ftp.kr.debian.org/debian/ jessie main
@@ -23,8 +27,7 @@
         state: present
         update_cache: yes
       with_items:
-        - htop
-        - dstat
+        - "{{ debian_mon }}"
 
     - name: remove a apt source
       file:
