@@ -1,0 +1,40 @@
+
+- name: for keystone audit log
+  hosts: cont
+  tasks:
+    - name: delete a dir
+      file:
+        path: "/var/audit/keystone/"
+        state: absent
+
+    - name: create a dir
+      file:
+        path: "/var/audit/keystone"
+        state: directory
+        owner: keystone
+        group: keystone
+
+    - name: create a file
+      file:
+        path: "/var/audit/keystone/keystone-audit.log"
+        state: touch
+        owner: keystone
+        group: keystone
+
+- name: for sshd
+  hosts: hos3
+  tasks:
+    - name: disable lookup
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        state: present
+        line: "UseDNS no"
+        backup: yes
+      notify: restart sshd
+
+  handlers:
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted
+        

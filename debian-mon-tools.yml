@@ -5,7 +5,6 @@
     debian_mon:
       - htop
       - dstat
-      - libguestfs-tools
     debian_repository_file: |
       deb http://ftp.kr.debian.org/debian/ jessie main
       deb-src http://ftp.kr.debian.org/debian/ jessie main
@@ -29,7 +28,15 @@
       with_items:
         - "{{ debian_mon }}"
 
+    - name: apt with libguestfs
+      apt:
+        name: "libguestfs-tools"
+        state: present
+      when: "'hlm' in group_names"
+
     - name: remove a apt source
       file:
         path: /etc/apt/sources.list.d/debian.list
         state: absent
+
+  
