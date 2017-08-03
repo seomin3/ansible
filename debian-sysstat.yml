@@ -9,10 +9,10 @@
       # Used by sa2(8) script
       # If value is greater than 28, then log files are kept in
       # multiple directories, one for each month.
-      HISTORY=7
+      HISTORY=14
 
       # Compress (using gzip or bzip2) sa and sar files older than (in days):
-      COMPRESSAFTER=10
+      COMPRESSAFTER=21
 
       # Parameters for the system activity data collector (see sadc(8) manual page)
       # which are used for the generation of log files.
@@ -21,7 +21,7 @@
       SADC_OPTIONS="-S DISK"
 
       # Directory where sa and sar files are saved.
-      SA_DIR=/var/tmp/sysstat
+      SA_DIR=/var/log/sysstat
 
       # Compression program to use.
       ZIP="bzip2"
@@ -60,7 +60,7 @@
 
     - name: create a dir
       file:
-        path: /var/tmp/sysstat
+        path: /var/log/sysstat
         state: directory
       become: true
 
@@ -82,8 +82,8 @@
         content: '{{ sysstat_crond_file }}'
       become: true
 
-    - name: delete old dir
-      file:
-        path: /var/log/sysstat
-        state: absent
-      become: true
+#    - name: delete old dir
+#      file:
+#        path: /var/log/sysstat
+#        state: absent
+#      become: true

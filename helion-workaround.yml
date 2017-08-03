@@ -1,6 +1,6 @@
 
 - name: for keystone audit log
-  hosts: cont
+  hosts: "{{ hosts | default('hos3') }}"
   tasks:
     - name: delete a dir
       file:
@@ -21,10 +21,10 @@
         owner: keystone
         group: keystone
 
-- name: for sshd
-  hosts: hos3
+- name: for hos node
+  hosts: "{{ hosts | default('hos3') }}"
   tasks:
-    - name: disable lookup
+    - name: disable lookup for ssh
       lineinfile:
         dest: /etc/ssh/sshd_config
         state: present
@@ -32,9 +32,15 @@
         backup: yes
       notify: restart sshd
 
+    - name: install package
+      apt: name={{ item }} state=present
+      with_items:
+        - open-vm-tools
+        - dstat
+        - htop
+
   handlers:
     - name: restart sshd
       service:
         name: sshd
         state: restarted
-        
