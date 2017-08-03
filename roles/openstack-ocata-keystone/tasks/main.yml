@@ -1,0 +1,36 @@
+---
+- fail: msg="only support the CentOS"
+  when: ansible_distribution != "CentOS"
+
+- include: centos.yml
+  tags:
+    - centos
+
+- include: centos-cont.yml
+  when: "'ocata-cont' in group_names"
+  tags:
+    - centos
+- include: centos-comp.yml
+  when: "'ocata-comp' in group_names"
+  tags:
+    - centos
+
+- include: mysql-cont.yml
+  when: "'ocata-cont' in group_names"
+  tags:
+    - mysql
+
+- include: rabbitmq-cont.yml
+  when: "'ocata-cont' in group_names"
+  tags:
+    - rabbitmq
+
+- include: memcached-cont.yml
+  when: "'ocata-cont' in group_names"
+  tags:
+    - memcached
+
+- include: keystone-cont.yml
+  when: "'ocata-cont' in group_names"
+  tags:
+    - keystone

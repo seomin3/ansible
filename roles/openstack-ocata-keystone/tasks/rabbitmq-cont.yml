@@ -1,0 +1,23 @@
+---
+- name: install rabbitmq-server
+  yum: name=rabbitmq-server state=present
+
+- name: start the rabbitmq-server
+  service: name=rabbitmq-server state=started enabled=yes
+
+- name: configure rabbitmq plugins
+  rabbitmq_plugin: name=rabbitmq_management state=enabled
+  register: rabbitmq_plugin
+
+- name: add user
+  rabbitmq_user:
+    name: openstack password="{{ rabbitmq_pass }}"
+    vhost: /
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present
+
+- name: restart rabbitmq-server
+  service: name=rabbitmq-server state=restarted
+  when: rabbitmq_plugin|changed

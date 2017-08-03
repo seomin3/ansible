@@ -1,0 +1,38 @@
+---
+- name: install the mysql
+  yum: name={{ item }} state=present
+  with_items:
+    - mariadb
+    - mariadb-server
+    - mariadb-devel
+    - python2-PyMySQL
+
+- name: install the 'Development tools' package group
+  yum: name="@Development tools" state=present
+
+- name: install python source package
+  yum: name=python-devel state=present
+
+- name: install mysql python module
+  pip: name=MySQL-python state=present
+
+- name: configure mysql
+  template:
+    src: mysql/openstack.cnf.j2
+    dest: /etc/my.cnf.d/openstack.cnf
+  notify: restart mysql
+
+- name: set root password
+  mysql_user: name=root host={{ item }} password={{ mysql_root_pass }} state=present
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - ::1
+  ignore_errors: True
+
+- name: set .my.cnf
+  template: src=mysql/.my.cnf.j2 dest=/root/.my.cnf
+
+- name: flush privilege
+  shell: mysql -ne 'FLUSH PRIVILEGES'
+  changed_when: False

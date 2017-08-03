@@ -1,0 +1,12 @@
+---
+- name: restart chrony
+  service: name=chronyd enabled=yes state=restarted
+
+- name: restart mysql
+  service: name=mariadb enabled=yes state=restarted
+
+- name: restart memcached
+  service: name=memcached enabled=yes state=restarted
+
+- name: restart httpd
+  service: name=httpd enabled=yes state=restarted

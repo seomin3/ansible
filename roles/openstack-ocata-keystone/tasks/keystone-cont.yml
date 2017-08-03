@@ -1,0 +1,130 @@
+---
+- name: create keystone db
+  mysql_db: name=keystone state=present
+
+- name: create keystone user of localhost
+  mysql_user:
+    name: keystone password="{{ keystone_db_pass }}"
+    host: ocalhost priv='keystone.*:ALL'
+
+- name: create keystone user of remote
+  mysql_user:
+    name: keystone password="{{ keystone_db_pass }}"
+    host: "{{ mysql_remote_host }}"
+    priv: 'keystone.*:ALL'
+
+- name: install keystone package
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openstack-keystone
+    - httpd
+    - mod_wsgi
+
+- name: set db with keystone
+  ini_file:
+    dest: "{{ keystone_config_dir }}/keystone.conf"
+    section: database
+    option: connection
+    value: "mysql+pymysql://keystone:{{ keystone_db_pass }}@{{ ansible_hostname }}/keystone"
+
+- name: set token provider
+  ini_file:
+    dest: "{{ keystone_config_dir }}/keystone.conf"
+    section: token
+    option: provider
+    value: fernet
+
+- name: set admin token
+  ini_file:
+    dest: "{{ keystone_config_dir }}/keystone.conf"
+    section: DEFAULT
+    option: admin_token
+    value: "{{ keystone_admin_token }}"
+
+- name: populate keystone db
+  command: keystone-manage db_sync
+  run_once: true
+
+- name: init fernet key repositories
+  command: keystone-manage "{{ item }}" --keystone-user keystone --keystone-group keystone
+  with_items:
+    - fernet_setup
+    - credential_setup
+
+- name: bootstrap the keystone
+  command: |
+    keystone-manage bootstrap --bootstrap-password "{{ openstack_admin_pass }}"
+    --bootstrap-admin-url "http://{{ ansible_hostname }}:35357/v3/"
+    --bootstrap-internal-url "http://{{ ansible_hostname }}:5000/v3/"
+    --bootstrap-public-url "http://{{ ansible_hostname }}:5000/v3/"
+    --bootstrap-region-id RegionOne
+
+- name: set hostname to httpd
+  template:
+    src: httpd/keystone.conf.j2
+    dest: /etc/httpd/conf.d/keystone.conf
+
+- name: set wsgi to httpd
+  file:
+    src: /usr/share/keystone/wsgi-keystone.conf
+    dest: /etc/httpd/conf.d/wsgi-keystone.conf
+    state: link
+
+- name: restart httpd
+  service: name=httpd state=restarted enabled=yes
+
+- name: write openstack environment file
+  template:
+    src: keystone/openstack.osrc.j2
+    dest: /root/openstack.osrc
+
+- name: add token cleanup to crontab
+  cron:
+    name: "keystone token cleanup"
+    state: present
+    hour: 1
+    minute: 1
+    job: "keystone-manage token_flush"
+  run_once: true
+
+- name: create project
+  keystone_v3:
+    login_token: "{{ keystone_admin_token }}"
+    endpoint: "{{ keystone_internal_endpoint }}"
+    action: "create_project"
+    project_name: "{{ item }}"
+    project_domain_name: default
+  with_items:
+    - service
+    - demo
+  run_once: true
+
+- name: create role
+  keystone_v3:
+    login_token: "{{ keystone_admin_token }}"
+    endpoint: "{{ keystone_internal_endpoint }}"
+    action: "create_role"
+    role_name: user
+  run_once: true
+
+- name: create demo user
+  keystone_v3:
+    login_token: "{{ keystone_admin_token }}"
+    endpoint: "{{ keystone_internal_endpoint }}"
+    action: "create_user"
+    user_name: demo
+    user_password: "{{ keystone_demo_pass }}"
+    user_domain_name: default
+  run_once: true
+
+- name: grant role to the demo user
+  keystone_v3:
+    login_token: "{{ keystone_admin_token }}"
+    endpoint: "{{ keystone_internal_endpoint }}"
+    action: "grant_project_role"
+    user_name: demo
+    project_name: demo
+    role_name: user
+    user_domain_name: default
+    project_domain_name: default
+  run_once: true

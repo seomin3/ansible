@@ -1,0 +1,6 @@
+---
+- name: prepare host for openstack
+  hosts: "{{ host_group | default('openstack-ocata') }}"
+  roles:
+    - openstack-ocata-keystone
+  become: yes

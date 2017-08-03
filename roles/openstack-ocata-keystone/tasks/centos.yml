@@ -1,0 +1,27 @@
+---
+- name: install base package
+  yum: name="{{ item }}" state=present
+  with_items:
+    - open-vm-tools
+    - dstat
+    - python-pip
+
+- name: prvider interface
+  template:
+    src: centos/ifcfg-ens192.cfg.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-ens192.cfg
+
+- name: set hosts
+  template:
+    src: centos/hosts.j2
+    dest: /etc/hosts
+    backup: yes
+
+- name: enable the openstack repository
+  yum: name=centos-release-openstack-ocata
+
+- name: upgrade package
+  yum: name=* state=latest
+
+- name: install the openstack client
+  yum: name=python-openstackclient state=present
