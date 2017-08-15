@@ -1,0 +1,13 @@
+---
+
+- name: cobbler basic configration
+  template:
+    src: settings.j2
+    dest: /etc/cobbler/settings
+    backup: yes
+
+- name: dhcp basic configuration
+  template:
+    src: dhcp.template.j2
+    dest: /etc/cobbler/dhcp.template
+    backup: yes

@@ -1,0 +1,4 @@
+---
+
+- name: start cobbler
+  service: name=cobbler enabled=yes state=started
