@@ -2,4 +2,4 @@
 - name: security dianosis in helion openstack
   hosts: hos3
   roles:
-  - debian-security-diagnosis
+  - helion-skt-security-diagnosis
