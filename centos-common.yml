@@ -1,0 +1,7 @@
+---
+- name: test
+  hosts: web
+  roles:
+  - centos-epel
+  - centos-common
+  - universal-ntp

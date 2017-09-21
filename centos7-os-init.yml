@@ -1,7 +1,0 @@
----
-- name: test
-  hosts: web
-  roles:
-  - repo-epel
-  - centos7-os-init
-  - ntp
