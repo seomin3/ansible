@@ -1,5 +1,5 @@
 ---
-- name: remove the default account
+- name: remove a useless account
   user:
     name: "{{ item }}"
     state: absent
@@ -7,7 +7,7 @@
     - ip
     - uucp
 
-- name: set a file permission
+- name: set permission an account file
   file:
     path: "{{ item }}"
     mode: 644
@@ -15,12 +15,12 @@
     - /etc/passwd
     - /etc/group
 
-- name: set a file permission on /etc/shadow
+- name: set permission a shadow file
   file:
     path: /etc/shadow
     mode: 400
 
-- name: password policy
+- name: change password policy file
   template:
     src: login.defs.j2
     dest: /etc/login.defs
@@ -28,7 +28,7 @@
     group: root
     mode: 644
 
-- name: adding the wheel group
+- name: add a wheel group
   group:
     name: wheel
 
@@ -38,13 +38,13 @@
     mode: 4750
     group: wheel
 
-- name: adding the wheel group in stack user
+- name: add stack user in wheel
   user:
     name: stack
     groups: wheel
     append: yes
 
-- name: remove suid, sgid from file
+- name: remove suid and sgid in user password file
   file:
     path: "{{ item }}"
     mode: "a-s"
@@ -53,7 +53,7 @@
     - /sbin/unix_chkpwd
     - /usr/bin/newgrp
 
-- name: remove r service
+- name: disable service that related with r
   file:
     path: "{{ item }}"
     mode: 000
@@ -65,25 +65,25 @@
     - /root/.rhosts
     - /home/stack/.rhosts
 
-- name: setting a session timeout
+- name: set timeout that ssh session
   lineinfile:
     dest: /etc/bash.bashrc
     line: 'TMOUT=3600'
     backup: yes
 
-- name: access deny a telnet and ssh
+- name: access deny that root login
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: '^PermitRootLogin'
     line: 'PermitRootLogin without-password'
     backup: yes
 
-- name: setting a system log
+- name: set permission a system log
   file:
     name: /etc/login.defs
     mode: 640
 
-- name: store of system log
+- name: store cycle a system log
   lineinfile:
     dest: "{{ item }}"
     regexp: '^rotate'
@@ -93,7 +93,7 @@
     - /etc/logrotate.conf
     - /etc/logrotate.d/rsyslog
 
-- name: enable of system log
+- name: set a rsyslog
   lineinfile:
     dest: /etc/rsyslog.conf
     line: "{{ item }}"
