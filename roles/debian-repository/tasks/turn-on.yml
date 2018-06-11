@@ -1,0 +1,11 @@
+---
+- name: turn on the apt source
+  copy:
+    dest: /etc/apt/sources.list.d/debian.list
+    content: |
+      deb http://mirror.kakao.com/debian/ jessie main
+      deb-src http://mirror.kakao.com/debian/ jessie main
+
+- name: update apt cache
+  apt:
+    update_cache: yes

@@ -1,0 +1,4 @@
+---
+debian_repository_file: |
+  deb http://mirror.kakao.com/debian/ jessie main
+  deb-src http://mirror.kakao.com/debian/ jessie main

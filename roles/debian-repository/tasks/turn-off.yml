@@ -1,0 +1,9 @@
+---
+- name: turn off the apt repository
+  file:
+    path: /etc/apt/sources.list.d/debian.list
+    state: absent
+
+- name: update apt cache
+  apt:
+    update_cache: yes
