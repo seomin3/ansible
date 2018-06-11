@@ -1,4 +1,10 @@
 ---
+- name: install prerequirement package
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - "{{ debian_packages }}"
+  when: ansible_distribution == 'Debian'
 
 - name: download install script
   get_url:
@@ -14,3 +20,12 @@
   command: bash /root/netdata.sh --non-interactive
   register: bash_result
   when: which_result.rc != 0
+
+- name: config NetData
+  template:
+    src: netdata.conf.j2
+    dest: /etc/netdata/netdata.conf
+    owner: netdata
+    group: root
+    backup: yes
+  notify: restart netdata

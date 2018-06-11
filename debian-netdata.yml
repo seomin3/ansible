@@ -1,0 +1,7 @@
+---
+
+- name: install netdata
+  hosts: "{{ hg | default('hlm') }}"
+  roles:
+    - centos-netdata
+  become: yes

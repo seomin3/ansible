@@ -1,5 +1,13 @@
 ---
+# Enable apt repository via internet
+- include: ../../debian-repository/tasks/turn-on.yml
+  when: ansible_distribution == 'Debian'
 
+# Install netdata
 - include: install.yml
 - include: config.yml
-  when: "'so-ops-newton-cont' in group_names or 'rdo-newton-cont1' == ansible_hostname"
+  when: "inventory_hostname == 'cont1' or 'cont' in group_names"
+
+# Disable apt repository
+- include: ../../debian-repository/tasks/turn-off.yml
+  when: ansible_distribution == 'Debian'
